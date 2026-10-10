@@ -125,30 +125,31 @@
   .b4 { background: #33ff33; color: #000; }
   footer { text-align: center; padding: 14px; font-size: 13px; color: #ffff00; }
 
-  /* ---------- fake Windows 98 popups ---------- */
-  #popups { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
-  .popup {
-    position: fixed;
-    width: 300px;
-    background: #c0c0c0;
-    border: 2px outset #fff;
-    box-shadow: 4px 4px 0 #000;
-    font-family: Tahoma, "MS Sans Serif", sans-serif;
-    font-size: 12px;
-    color: #000;
-    pointer-events: auto;
-    animation: popin 0.25s steps(3) both;
+  /* ---------- quadrotor drone popups ---------- */
+  #popups { position: fixed; inset: 0; pointer-events: none; z-index: 1000; overflow: hidden; }
+  .drone {
+    position: absolute; left: 0; top: 0; width: 220px;
+    display: flex; flex-direction: column; align-items: center;
+    pointer-events: auto; will-change: transform;
+    font-family: Tahoma, "MS Sans Serif", sans-serif; font-size: 12px; color: #000;
   }
-  @keyframes popin { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .popup .title { background: linear-gradient(90deg, #000080, #1084d0); color: #fff; font-weight: bold; padding: 3px 4px; display: flex; justify-content: space-between; align-items: center; }
-  .popup .title button { width: 18px; height: 16px; font-size: 10px; font-weight: bold; background: #c0c0c0; border: 1px outset #fff; cursor: pointer; padding: 0; }
-  .popup .body { padding: 12px; display: flex; gap: 10px; align-items: center; }
-  .popup .body .icon { font-size: 34px; }
-  .popup .foot { text-align: center; padding: 6px 0 8px; }
-  .popup .foot button { min-width: 74px; padding: 4px 8px; background: #c0c0c0; border: 2px outset #fff; font-family: inherit; font-size: 12px; cursor: pointer; }
-  .popup.ad-pop .body { flex-direction: column; text-align: center; background: #fff; }
-  .popup.ad-pop .big { font-family: Impact, sans-serif; font-size: 26px; color: #f00; text-shadow: 2px 2px #ff0; animation: blink 0.6s steps(2, start) infinite; }
-  .popup.ad-pop img { width: 100%; max-height: 120px; object-fit: cover; border: 2px inset #888; }
+  .drone .craft { width: 120px; height: 60px; transform-origin: 50% 50%; filter: drop-shadow(0 6px 4px rgba(0,0,0,.45)); }
+  .drone .rotor { transform-box: fill-box; transform-origin: center; animation: spin 0.08s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .drone .led { animation: blink 0.5s steps(2, start) infinite; }
+  .drone .tether { width: 2px; height: 22px; background: #222; }
+  .drone .card {
+    width: 200px; background: #c0c0c0; border: 2px outset #fff; box-shadow: 4px 4px 0 #000;
+    transform-origin: 50% 0; will-change: transform;
+  }
+  .drone .title { background: linear-gradient(90deg, #000080, #1084d0); color: #fff; font-weight: bold; padding: 3px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .drone .title button { width: 18px; height: 16px; font-size: 10px; font-weight: bold; background: #c0c0c0; border: 1px outset #fff; cursor: pointer; padding: 0; }
+  .drone .body { padding: 8px; display: flex; gap: 8px; align-items: center; }
+  .drone .body .icon { font-size: 28px; }
+  .drone .foot { text-align: center; padding: 4px 0 8px; }
+  .drone .foot button { min-width: 74px; padding: 4px 8px; background: #c0c0c0; border: 2px outset #fff; font-family: inherit; font-size: 12px; cursor: pointer; }
+  .drone.ad-pop .body { flex-direction: column; text-align: center; background: #fff; }
+  .drone.ad-pop .big { font-family: Impact, sans-serif; font-size: 22px; color: #f00; text-shadow: 2px 2px #ff0; animation: blink 0.6s steps(2, start) infinite; }
   .shake { animation: shake 0.3s linear 3; }
   @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
@@ -342,28 +343,65 @@
     popup:    { title: 'Message from webpage', icon: '💬', msg: 'Please enjoy our wedding website!!!', btn: 'OK' }
   };
 
-  var count = 0;
+  var MAX_DRONES = 3;
+  var drones = [];
+  var DRONE_SVG =
+    '<svg class="craft" viewBox="0 0 120 60">' +
+    '<g stroke="#111" stroke-width="5" stroke-linecap="round"><line x1="40" y1="30" x2="14" y2="14"/><line x1="80" y1="30" x2="106" y2="14"/><line x1="40" y1="30" x2="14" y2="46"/><line x1="80" y1="30" x2="106" y2="46"/></g>' +
+    '<g fill="#222"><rect x="10" y="8" width="8" height="8"/><rect x="102" y="8" width="8" height="8"/><rect x="10" y="44" width="8" height="8"/><rect x="102" y="44" width="8" height="8"/></g>' +
+    '<g fill="#9cf" fill-opacity=".55" stroke="#036" stroke-width="1">' +
+    '<ellipse class="rotor" cx="14" cy="12" rx="14" ry="3"/><ellipse class="rotor" cx="106" cy="12" rx="14" ry="3"/>' +
+    '<ellipse class="rotor" cx="14" cy="44" rx="14" ry="3"/><ellipse class="rotor" cx="106" cy="44" rx="14" ry="3"/></g>' +
+    '<rect x="38" y="20" width="44" height="20" rx="7" fill="#444" stroke="#111" stroke-width="2"/>' +
+    '<rect x="46" y="24" width="28" height="6" rx="3" fill="#8cf"/>' +
+    '<circle cx="60" cy="36" r="3" fill="#111"/>' +
+    '<circle class="led" cx="44" cy="35" r="2" fill="#f00"/><circle class="led" cx="76" cy="35" r="2" fill="#0f0"/>' +
+    '</svg>';
+
+  function removeDrone(d) {
+    var i = drones.indexOf(d);
+    if (i >= 0) drones.splice(i, 1);
+    d.el.remove();
+  }
+
   function spawn(key, opts) {
+    // never more than MAX_DRONES at once: the oldest one is sent off to make room
+    // for a user-triggered popup, automatic ones just wait their turn
+    if (drones.length >= MAX_DRONES) {
+      if (opts && opts.auto) return null;
+      removeDrone(drones[0]);
+    }
     var ad = ADS[key] || ADS.popup;
-    var box = document.createElement('div');
-    box.className = 'popup' + (opts && opts.big ? ' ad-pop' : '');
-    var w = 300;
-    box.style.width = w + 'px';
-    box.style.left = (Math.random() * (window.innerWidth - w - 20) + 10) + 'px';
-    box.style.top = (Math.random() * (window.innerHeight - 180) + 10) + 'px';
-    box.style.zIndex = 1000 + (++count);
-    box.innerHTML =
+    var el = document.createElement('div');
+    el.className = 'drone' + (opts && opts.big ? ' ad-pop' : '');
+    el.innerHTML = DRONE_SVG + '<div class="tether"></div>' +
+      '<div class="card">' +
       '<div class="title"><span>' + ad.title + '</span><button aria-label="Close">X</button></div>' +
       '<div class="body"><span class="icon">' + ad.icon + '</span><span>' + ad.msg + '</span></div>' +
-      '<div class="foot"><button>' + ad.btn + '</button></div>';
-    var close = function () { box.remove(); };
-    box.querySelector('.title button').onclick = close;
-    box.querySelector('.foot button').onclick = close;
-    document.getElementById('popups').appendChild(box);
-    // bring it to the front when clicked, and rattle it a little so it's noticed
-    box.addEventListener('mousedown', function () { box.style.zIndex = 1000 + (++count); });
-    box.classList.add('shake');
-    return box;
+      '<div class="foot"><button>' + ad.btn + '</button></div></div>';
+    document.getElementById('popups').appendChild(el);
+
+    var W = window.innerWidth, H = window.innerHeight;
+    var h = el.offsetHeight, w = el.offsetWidth;
+    var ltr = Math.random() < 0.5;
+    var y0 = Math.random() * Math.max(10, H - h - 20) + 5;
+    var y1 = Math.random() * Math.max(10, H - h - 20) + 5;
+    var d = {
+      el: el, card: el.querySelector('.card'), craft: el.querySelector('.craft'),
+      x0: ltr ? -w : W, x1: ltr ? W : -w, y0: y0, y1: y1,
+      dur: 11000 + Math.random() * 6000, t: 0, last: performance.now(),
+      phase: Math.random() * 6.28, hover: false
+    };
+    d.dir = ltr ? 1 : -1;
+    var close = function () { removeDrone(d); };
+    el.querySelector('.title button').onclick = close;
+    el.querySelector('.foot button').onclick = close;
+    // hold still while the mouse is over it so it can actually be clicked
+    el.addEventListener('mouseenter', function () { d.hover = true; });
+    el.addEventListener('mouseleave', function () { d.hover = false; });
+    drones.push(d);
+    el.style.transform = 'translate(' + d.x0 + 'px,' + d.y0 + 'px)';
+    return el;
   }
 
   function popAd(key) {
@@ -371,13 +409,34 @@
     return false;
   }
 
-  // a fresh popup every ~8 seconds, plus a big ad every ~25 seconds
+  var lastFrame = performance.now();
+  function fly(now) {
+    var dt = now - lastFrame; lastFrame = now;
+    for (var i = drones.length - 1; i >= 0; i--) {
+      var d = drones[i];
+      if (!d.hover) d.t += dt;
+      var p = Math.min(d.t / d.dur, 1);
+      var e = p;
+      var bob = Math.sin(now / 400 + d.phase) * 8;
+      var x = d.x0 + (d.x1 - d.x0) * e;
+      var y = d.y0 + (d.y1 - d.y0) * e + bob;
+      d.el.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      // lean into the direction of travel, card swings gently beneath
+      d.craft.style.transform = 'rotate(' + (d.dir * (d.hover ? 0 : 8) + Math.sin(now / 500 + d.phase) * 2) + 'deg)';
+      d.card.style.transform = 'rotate(' + (Math.sin(now / 600 + d.phase) * 2 - d.dir * 1.5) + 'deg)';
+      if (p >= 1) removeDrone(d);
+    }
+    requestAnimationFrame(fly);
+  }
+  requestAnimationFrame(fly);
+
+  // a fresh drone every ~8 seconds (skipped while 3 are airborne), plus a big ad every ~25 seconds
   var keys = Object.keys(ADS);
   setInterval(function () {
-    spawn(keys[Math.floor(Math.random() * keys.length)]);
+    spawn(keys[Math.floor(Math.random() * keys.length)], { auto: true });
   }, 8000);
   setInterval(function () {
-    spawn('win', { big: true });
+    spawn('win', { big: true, auto: true });
   }, 25000);
   setTimeout(function () { spawn('ipod'); }, 2000);
 </script>
