@@ -133,6 +133,9 @@
     pointer-events: auto; will-change: transform;
     font-family: Tahoma, "MS Sans Serif", sans-serif; font-size: 12px; color: #000;
   }
+  .drone { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .drone.grabbed { cursor: grabbing; }
+  .drone.grabbed .craft { filter: drop-shadow(0 0 6px #0ff) drop-shadow(0 8px 6px rgba(0,0,0,.5)); }
   .drone .craft { width: 120px; height: 60px; transform-origin: 50% 50%; filter: drop-shadow(0 6px 4px rgba(0,0,0,.45)); }
   .drone .rotor { transform-box: fill-box; transform-origin: center; animation: spin 0.08s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -406,21 +409,25 @@
     ], { duration: 600, easing: 'ease-out' }).onfinish = function () { f.remove(); };
   }
 
+  // the drone blows up; its popup is no longer held up, so it tumbles off the bottom
+  var falling = [];
   function explode(d) {
     var i = drones.indexOf(d);
     if (i >= 0) drones.splice(i, 1);
     var el = d.el;
     el.style.pointerEvents = 'none';
-    var cx = d.x + d.w / 2, cy = d.y + d.h / 2, ty = d.y + 30;
-    fireball(cx, ty, 4);
-    fireball(cx, cy + 20, 5);
-    burst(cx, ty, 10, ['#222', '#444', '#9cf', '#f60'], 120, 10, 900);
-    burst(cx, cy + 20, 18, ['#c0c0c0', '#000080', '#fff', '#f90', '#ff0'], 160, 14, 1000);
-    el.animate([
-      { filter: 'brightness(1)', opacity: 1, scale: 1 },
-      { filter: 'brightness(4)', opacity: 1, scale: 1.1, offset: 0.25 },
-      { filter: 'brightness(4)', opacity: 0, scale: 1.5 }
-    ], { duration: 450, easing: 'ease-out' }).onfinish = function () { el.remove(); };
+    el.classList.remove('hit');
+    d.craft.style.visibility = 'hidden';
+    el.querySelector('.tether').style.visibility = 'hidden';
+    var cx = d.x + d.w / 2, cy = d.y + 30;
+    fireball(cx, cy, 4);
+    burst(cx, cy, 14, ['#222', '#444', '#9cf', '#f60', '#ff0'], 130, 10, 900);
+    d.spin = rand(40, 120) * (Math.random() < 0.5 ? -1 : 1);
+    d.rot = 0;
+    d.vy = Math.max(d.vy, 0) - 60;
+    d.hover = false;
+    el.style.transformOrigin = '50% 70%';
+    falling.push(d);
   }
 
   function onScreen(d) {
@@ -428,6 +435,7 @@
   }
 
   function laser(s, t) {
+    if (t.grabbed) return;
     var ox = s.x + s.w / 2, oy = s.y + 30;
     var tx = t.x + t.w / 2, ty = t.y + t.h / 2;
     var dx = tx - ox, dy = ty - oy;
@@ -443,18 +451,18 @@
     t.el.classList.add('hit');
     setTimeout(function () { t.el.classList.remove('hit'); }, 250);
     burst(tx, ty, 8, ['#ff0', '#f80', '#fff'], 50, 6, 400);
-    if (Math.random() < 0.3) explode(t);
+    explode(t);
   }
 
-  // every couple of seconds one drone takes a shot at another
+  // every second or two one drone takes a shot at another
   function fire() {
     var live = drones.filter(onScreen);
     if (live.length >= 2) {
       var s = live[Math.floor(Math.random() * live.length)];
-      var others = live.filter(function (d) { return d !== s; });
-      laser(s, others[Math.floor(Math.random() * others.length)]);
+      var others = live.filter(function (d) { return d !== s && !d.grabbed; });
+      if (others.length) laser(s, others[Math.floor(Math.random() * others.length)]);
     }
-    setTimeout(fire, rand(1800, 4000));
+    setTimeout(fire, rand(900, 2200));
   }
 
   function spawn(key, opts) {
@@ -483,7 +491,7 @@
       w: w, h: h, x: dir > 0 ? -w : W, y: rand(5, Math.max(10, H - h - 20)),
       vx: dir * speed, vy: 0, cruise: dir * speed,
       ty: rand(5, Math.max(10, H - h - 20)), nextTy: performance.now() + rand(3000, 6000),
-      born: performance.now(), entered: false, hover: false, phase: rand(0, 6.28)
+      born: performance.now(), entered: false, hover: false, grabbed: false, bob: 0, tvx: 0, tvy: 0, phase: rand(0, 6.28)
     };
     var close = function () { removeDrone(d); };
     el.querySelector('.title button').onclick = close;
@@ -491,6 +499,37 @@
     // hold still while the mouse is over it so it can actually be clicked
     el.addEventListener('mouseenter', function () { d.hover = true; });
     el.addEventListener('mouseleave', function () { d.hover = false; });
+    // click and drag to fly it yourself: it can't be shot down while held, and
+    // it's thrown with whatever speed you let go at
+    el.addEventListener('pointerdown', function (e) {
+      if (e.button > 0 || e.target.closest('button')) return;
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      d.grabbed = true; d.hover = true; d.tvx = 0; d.tvy = 0;
+      d.gx = e.clientX - d.x; d.gy = e.clientY - (d.y + d.bob);
+      d.px = d.x; d.py = d.y; d.lastT = e.timeStamp;
+      el.classList.add('grabbed');
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!d.grabbed) return;
+      var nx = Math.max(0, Math.min(window.innerWidth, e.clientX)) - d.gx;
+      var ny = Math.max(0, Math.min(window.innerHeight, e.clientY)) - d.gy;
+      var dtm = Math.max(1, e.timeStamp - d.lastT) / 1000; d.lastT = e.timeStamp;
+      d.tvx = d.tvx * 0.5 + ((nx - d.px) / dtm) * 0.5;
+      d.tvy = d.tvy * 0.5 + ((ny - d.py) / dtm) * 0.5;
+      d.px = nx; d.py = ny;
+    });
+    var release = function () {
+      if (!d.grabbed) return;
+      d.grabbed = false;
+      d.hover = el.matches(':hover');
+      d.vx = Math.max(-600, Math.min(600, d.tvx));
+      d.vy = Math.max(-600, Math.min(600, d.tvy));
+      if (Math.abs(d.vx) > 15) d.cruise = (d.vx > 0 ? 1 : -1) * Math.abs(d.cruise);
+      el.classList.remove('grabbed');
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
     drones.push(d);
     el.style.transform = 'translate(' + d.x + 'px,' + d.y + 'px)';
     return el;
@@ -530,7 +569,11 @@
     var W = window.innerWidth, H = window.innerHeight;
     var list = drones.slice();
     list.forEach(function (d) {
-      if (!d.hover) {
+      if (d.grabbed) {
+        d.x = d.px; d.y = d.py;
+        d.vx = d.tvx; d.vy = d.tvy;
+        d.tvx *= Math.pow(0.001, dt); d.tvy *= Math.pow(0.001, dt);
+      } else if (!d.hover) {
         if (now > d.nextTy) { d.ty = rand(5, Math.max(10, H - d.h - 5)); d.nextTy = now + rand(3000, 6000); }
         d.vx += (d.cruise - d.vx) * Math.min(1, dt * 0.6);
         var want = Math.max(-40, Math.min(40, (d.ty - d.y) * 0.3));
@@ -541,22 +584,30 @@
       if (d.y < 0) { d.y = 0; d.vy = Math.abs(d.vy); }
       if (d.y > maxY) { d.y = maxY; d.vy = -Math.abs(d.vy); }
     });
+    falling = falling.filter(function (d) {
+      d.vy += 900 * dt;
+      d.x += d.vx * dt * 0.5; d.y += d.vy * dt; d.rot += d.spin * dt;
+      d.el.style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.rot + 'deg)';
+      if (d.y > H + 50) { d.el.remove(); return false; }
+      return true;
+    });
     for (var i = 0; i < list.length; i++)
       for (var j = i + 1; j < list.length; j++) collide(list[i], list[j]);
     list.forEach(function (d) {
       if (onScreen(d)) d.entered = true;
-      else if (d.entered || now - d.born > 20000) { removeDrone(d); return; }
-      var bob = Math.sin(now / 400 + d.phase) * 8;
+      else if (!d.grabbed && (d.entered || now - d.born > 20000)) { removeDrone(d); return; }
+      var bob = d.grabbed ? d.bob : Math.sin(now / 400 + d.phase) * 8;
+      d.bob = bob;
       d.el.style.transform = 'translate(' + d.x + 'px,' + (d.y + bob) + 'px)';
       // lean into the direction of travel, card swings gently beneath
-      var lean = d.hover ? 0 : Math.max(-10, Math.min(10, d.vx * 0.08));
+      var lean = d.hover && !d.grabbed ? 0 : Math.max(-10, Math.min(10, d.vx * 0.08));
       d.craft.style.transform = 'rotate(' + (lean + Math.sin(now / 500 + d.phase) * 2) + 'deg)';
       d.card.style.transform = 'rotate(' + (Math.sin(now / 600 + d.phase) * 2 - d.vx * 0.015) + 'deg)';
     });
     requestAnimationFrame(fly);
   }
   requestAnimationFrame(fly);
-  setTimeout(fire, 4000);
+  setTimeout(fire, 3000);
 
   // a fresh drone every ~8 seconds (skipped while 3 are airborne), plus a big ad every ~25 seconds
   var keys = Object.keys(ADS);
