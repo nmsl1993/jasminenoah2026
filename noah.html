@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>~*~ Jasmine &amp; Noah ~*~ | November 16, 2026 ~*~</title>
+<meta name="description" content="Jasmine & Noah wedding website. November 16, 2026, Olympia, WA.">
+<style>
+  /* ---------- 2000s GeoCities energy ---------- */
+  body {
+    margin: 0;
+    background: #000 url("images/field.jpg") repeat;
+    background-size: 220px;
+    color: #00ff00;
+    font-family: "Comic Sans MS", "Microsoft YaHei", cursive;
+    font-size: 15px;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23ff00ff'/%3E%3C/svg%3E") 8 8, auto;
+  }
+  a { color: #ffff00; }
+  a:visited { color: #ff9900; }
+  a:hover { color: #ff00ff; }
+
+  /* rainbow headings */
+  .rainbow {
+    background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, violet, red);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow 3s linear infinite;
+  }
+  @keyframes rainbow { to { background-position: 200% center; } }
+
+  .blink { animation: blink 0.9s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+
+  .wobble { display: inline-block; animation: wobble 1.4s ease-in-out infinite; }
+  @keyframes wobble { 50% { transform: rotate(-6deg) scale(1.08); } }
+
+  /* the ticker tape */
+  .marquee-wrap { overflow: hidden; white-space: nowrap; background: #ff00ff; color: #ffff00; border-top: 3px ridge #fff; border-bottom: 3px ridge #fff; font-weight: bold; }
+  .marquee { display: inline-block; padding-left: 100%; animation: scroll 14s linear infinite; }
+  @keyframes scroll { to { transform: translateX(-100%); } }
+  .marquee-wrap.alt { background: #000080; color: #00ffff; }
+  .marquee.slow { animation-duration: 22s; }
+
+  /* layout */
+  #layout { display: flex; align-items: flex-start; justify-content: center; gap: 8px; padding: 8px; }
+  .sidebar { width: 170px; flex-shrink: 0; position: sticky; top: 8px; }
+  .sidebar .ad { display: block; margin-bottom: 10px; border: 3px outset #c0c0c0; text-decoration: none; text-align: center; }
+  .sidebar .ad-inner { padding: 8px 4px; font-family: Impact, "Arial Black", sans-serif; font-size: 18px; }
+  .ad.a1 { background: #ff0000; color: #fff; }
+  .ad.a2 { background: #00ff00; color: #000; font-size: 13px; }
+  .ad.a3 { background: #0000ff; color: #ffff00; }
+  .ad.a4 { background: #ffff00; color: #f00; }
+  .sidebar .ad small { display: block; font-family: "Comic Sans MS", cursive; font-size: 11px; }
+
+  main#site {
+    width: min(800px, 100%);
+    background: #000080;
+    border: 8px ridge #c0c0c0;
+    box-shadow: 0 0 40px #ff00ff;
+  }
+  .frame { border: 4px inset #c0c0c0; margin: 8px; padding: 14px; background: #000040; }
+
+  /* hero */
+  .hero {
+    text-align: center;
+    padding: 20px 10px;
+    background: #000 url("images/hero.jpg") center/cover no-repeat;
+    border: 4px double #ffff00;
+    position: relative;
+  }
+  .hero .overlay { background: rgba(0,0,0,0.55); padding: 14px; }
+  .hero h1 { font-family: Impact, "Arial Black", sans-serif; font-size: clamp(40px, 9vw, 84px); margin: 6px 0; text-shadow: 4px 4px 0 #ff00ff, 8px 8px 0 #000; }
+  .chip { display: inline-block; background: #ffff00; color: #f00; font-weight: bold; padding: 4px 10px; border: 2px dashed #f00; font-size: 14px; }
+  .hero nav { margin-top: 14px; }
+  .btn {
+    display: inline-block;
+    margin: 4px;
+    padding: 10px 16px;
+    font-family: Impact, sans-serif;
+    font-size: 18px;
+    text-decoration: none;
+    color: #000;
+    background: linear-gradient(#ffff66, #ffcc00);
+    border: 3px outset #ffcc00;
+  }
+  .btn:hover { background: linear-gradient(#ff66ff, #cc00cc); color: #fff; }
+
+  /* sections */
+  section { padding: 14px 10px; }
+  h2 { font-family: Impact, "Arial Black", sans-serif; text-align: center; font-size: 30px; color: #ffff00; text-shadow: 3px 3px 0 #f00; margin: 6px 0 12px; }
+  h2 .zh, h3 .zh, p .zh, small .zh { display: block; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; font-size: 0.8em; color: #00ffff; margin-top: 2px; }
+  h3 { color: #ff66ff; font-size: 18px; margin: 14px 0 4px; text-decoration: underline wavy #00ff00; }
+  p, small { line-height: 1.5; color: #fff; }
+  small { color: #ffff66; display: block; margin-bottom: 4px; }
+
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cols > div { background: #000; border: 3px ridge #00ffff; padding: 8px; }
+  .photo-frame { border: 4px outset #c0c0c0; background: #fff; padding: 6px 6px 22px; transform: rotate(-2deg); margin: 4px auto 10px; max-width: 100%; }
+  .photo-frame img { width: 100%; display: block; }
+  .photo-frame.alt { transform: rotate(3deg); }
+  .photo-frame .caption { color: #000; text-align: center; font-size: 12px; margin-top: 4px; font-family: "Comic Sans MS", cursive; }
+
+  .events { list-style: none; padding: 0; margin: 0; }
+  .events li { border: 2px dashed #ff00ff; margin-bottom: 12px; padding: 10px; background: #220022; }
+  .events li:nth-child(even) { border-color: #00ff00; }
+
+  .faq h3 { color: #00ff00; }
+  .faq p { margin-left: 12px; }
+
+  .rsvp .script { font-family: "Brush Script MT", cursive; font-size: 46px; color: #ff66ff; text-align: center; margin: 0; transform: rotate(-4deg); }
+  .rsvp .by { text-align: center; font-size: clamp(36px, 7vw, 64px); }
+  .contact { border: 3px groove #ffff00; padding: 10px; background: #000; }
+  .contact h4 { color: #00ffff; margin: 10px 0 2px; text-transform: uppercase; }
+  .contact p { margin: 0; }
+
+  /* counter + guestbook footer */
+  .counter { font-family: "Courier New", monospace; background: #000; color: #0f0; border: 3px inset #888; display: inline-block; padding: 4px 8px; font-size: 20px; letter-spacing: 3px; }
+  .badges { text-align: center; margin: 12px 0; }
+  .badges span { display: inline-block; border: 2px outset #ccc; padding: 4px 8px; margin: 3px; font-family: Verdana, sans-serif; font-size: 11px; font-weight: bold; }
+  .b1 { background: #00ccff; color: #000; }
+  .b2 { background: #ff3399; color: #fff; }
+  .b3 { background: #ffcc00; color: #000; }
+  .b4 { background: #33ff33; color: #000; }
+  footer { text-align: center; padding: 14px; font-size: 13px; color: #ffff00; }
+
+  /* ---------- fake Windows 98 popups ---------- */
+  #popups { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+  .popup {
+    position: fixed;
+    width: 300px;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    box-shadow: 4px 4px 0 #000;
+    font-family: Tahoma, "MS Sans Serif", sans-serif;
+    font-size: 12px;
+    color: #000;
+    pointer-events: auto;
+    animation: popin 0.25s steps(3) both;
+  }
+  @keyframes popin { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .popup .title { background: linear-gradient(90deg, #000080, #1084d0); color: #fff; font-weight: bold; padding: 3px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .popup .title button { width: 18px; height: 16px; font-size: 10px; font-weight: bold; background: #c0c0c0; border: 1px outset #fff; cursor: pointer; padding: 0; }
+  .popup .body { padding: 12px; display: flex; gap: 10px; align-items: center; }
+  .popup .body .icon { font-size: 34px; }
+  .popup .foot { text-align: center; padding: 6px 0 8px; }
+  .popup .foot button { min-width: 74px; padding: 4px 8px; background: #c0c0c0; border: 2px outset #fff; font-family: inherit; font-size: 12px; cursor: pointer; }
+  .popup.ad-pop .body { flex-direction: column; text-align: center; background: #fff; }
+  .popup.ad-pop .big { font-family: Impact, sans-serif; font-size: 26px; color: #f00; text-shadow: 2px 2px #ff0; animation: blink 0.6s steps(2, start) infinite; }
+  .popup.ad-pop img { width: 100%; max-height: 120px; object-fit: cover; border: 2px inset #888; }
+  .shake { animation: shake 0.3s linear 3; }
+  @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+  /* the "you won" bar at the top */
+  #winbar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffff00; color: #f00; font-family: Impact, sans-serif; text-align: center; padding: 6px; font-size: 18px; z-index: 999; border-top: 4px solid #f00; }
+  #winbar a { color: #00f; }
+
+  /* hide sidebars on phones */
+  @media (max-width: 1040px) { .sidebar { display: none; } }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="marquee-wrap"><div class="marquee">*** WELCOME TO OUR WEDDING SITE!!! *** SIGN OUR GUESTBOOK *** NO REGISTRY, JUST COME!!! *** NOVEMBER 16, 2026 *** OLYMPIA, WA ***</div></div>
+
+<div id="layout">
+
+  <!-- LEFT SIDEBAR: obnoxious ads -->
+  <aside class="sidebar" aria-label="Sponsors">
+    <a class="ad a1" href="#" onclick="return popAd('ipod')"><div class="ad-inner">YOU ARE<br>VISITOR #1,000,000!!!</div><small>CLICK TO CLAIM YOUR FREE IPOD</small></a>
+    <a class="ad a2" href="#" onclick="return popAd('hamster')"><div class="ad-inner">SINGLES IN<br>YOUR AREA!!</div><small>(they are hamsters)</small></a>
+    <a class="ad a3" href="#" onclick="return popAd('dial')"><div class="ad-inner">DIAL-UP TOO SLOW?</div><small>Get 56k for only $19.99/mo!!</small></a>
+    <a class="ad a4" href="#" onclick="return popAd('lose')"><div class="ad-inner blink">LOSE 30 LBS IN 3 DAYS</div><small>doctors hate this!</small></a>
+  </aside>
+
+  <main id="site">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="overlay">
+        <div class="chip">November 16, 2026 | Olympia, WA <span class="zh">2026年11月16日 | 华盛顿州奥林匹亚</span></div>
+        <h1 class="rainbow">Jasmine &amp; Noah!!</h1>
+        <p class="blink" style="color:#ffff00;font-weight:bold;margin:0">~*~ WE'RE GETTING MARRIED ~*~</p>
+        <nav>
+          <a class="btn" href="#schedule">★ Schedule ★<span class="zh" style="color:#000">行程安排</span></a>
+          <a class="btn" href="#faq">? FAQ ?<span class="zh" style="color:#000">常见问题</span></a>
+          <a class="btn" href="#rsvp">✉ Contact ✉</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="marquee-wrap alt"><div class="marquee slow">Under construction!! Pardon our dust!! &nbsp;&nbsp;&nbsp; Best viewed in Netscape Navigator 4.0 at 800x600 &nbsp;&nbsp;&nbsp; Sign the guestbook!!! &nbsp;&nbsp;&nbsp; Now with 100% more love!!!</div></div>
+
+    <!-- POLAROID -->
+    <section style="text-align:center">
+      <div class="photo-frame alt" style="max-width:420px">
+        <img src="images/polaroid.jpg" alt="Couple walking through a field" loading="lazy">
+        <div class="caption">us!!! (circa 2026) &lt;3</div>
+      </div>
+    </section>
+
+    <!-- ABOUT THE CEREMONY -->
+    <section id="wedding">
+      <h2 class="rainbow">~ About the Ceremony ~<span class="zh" style="color:#00ffff;text-shadow:none">关于领证仪式</span></h2>
+      <div class="cols">
+        <div>
+          <div class="photo-frame" style="transform:rotate(-2deg)"><img src="images/venue.webp" alt="Washington State Capitol, Olympia" loading="lazy"><div class="caption">the capitol!</div></div>
+          <h3>VENUE <span class="zh">地点</span></h3>
+          <p>The ceremony will be at the Washington State Capitol in Olympia.<span class="zh">婚礼将在奥林匹亚的华盛顿州议会大厦举行。</span></p>
+        </div>
+        <div>
+          <div class="photo-frame alt"><img src="images/accommodations.webp" alt="Guests relaxing outdoors" loading="lazy"><div class="caption">chillin' outside</div></div>
+          <h3>ACCOMMODATIONS <span class="zh">住宿</span></h3>
+          <p>We will book accommodations for our guests in Olympia.<span class="zh">我们将为宾客在奥林匹亚安排住宿。</span></p>
+        </div>
+        <div>
+          <div class="photo-frame" style="transform:rotate(2deg)"><img src="images/activities.webp" alt="Picnic with peaches and champagne" loading="lazy"><div class="caption">picnic time!!</div></div>
+          <h3>ACTIVITIES <span class="zh">活动</span></h3>
+          <p>Join us for a meet-and-greet dinner the day before, and a dinner after the ceremony. Locations to be updated.<span class="zh">领证仪式前一天有欢迎家宴，仪式结束后有婚礼家宴。具体地点待定。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section id="schedule">
+      <h2 class="rainbow">~ Wedding Schedule ~<span class="zh" style="color:#00ffff;text-shadow:none">仪式日程</span></h2>
+      <ol class="events">
+        <li>
+          <small>Sunday, November 15<br>Time and location to be updated<span class="zh">11月15日（周日）· 时间和地点待定</span></small>
+          <h3>Meet-and-Greet Dinner <span class="zh">欢迎晚餐</span></h3>
+          <p>Dinner with family and friends the day before the wedding<span class="zh">婚礼前一天与家人朋友共进晚餐</span></p>
+        </li>
+        <li>
+          <small>2:00 PM, Monday, November 16<br>Washington State Capitol, Olympia<span class="zh">11月16日（周一）下午2:00 · 华盛顿州议会大厦，奥林匹亚</span></small>
+          <h3 class="blink">Wedding Ceremony <span class="zh">领证仪式</span></h3>
+          <p>Please arrive at least 15 minutes early<span class="zh">请至少提前15分钟到场</span></p>
+        </li>
+        <li>
+          <small>Monday, November 16<br>Time and location to be updated<span class="zh">11月16日（周一）· 时间和地点待定</span></small>
+          <h3>Wedding Dinner <span class="zh">婚礼晚餐</span></h3>
+          <p>Dinner together after the ceremony<span class="zh">仪式结束后共进晚餐</span></p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+      <h2 class="rainbow">~ Frequently Asked Questions ~<span class="zh" style="color:#00ffff;text-shadow:none">常见问题</span></h2>
+      <div class="frame">
+        <h3>Do I need to RSVP? <span class="zh">需要回复是否出席吗？</span></h3>
+        <p>No RSVP needed. It's a small group.<span class="zh">不需要。人数不多，无需回复。</span></p>
+        <h3>What time should I arrive? <span class="zh">几点到场？</span></h3>
+        <p>The ceremony starts at 2:00 PM. Please arrive at least 15 minutes early.<span class="zh">仪式下午2:00开始，请至少提前15分钟到场。</span></p>
+        <h3>Is there a dress code? <span class="zh">有着装要求吗？</span></h3>
+        <p>Dressy attire, suitable for Seattle-area weather in November.<span class="zh">请穿着正式一些，并考虑西雅图地区11月的天气。</span></p>
+        <h3>Where will we stay? <span class="zh">住在哪里？</span></h3>
+        <p>We will book accommodations for our guests in Olympia.<span class="zh">我们会在奥林匹亚为宾客安排住宿。</span></p>
+        <h3>Do you have a wedding registry? <span class="zh">有礼物清单吗？</span></h3>
+        <p>No registry. We just want you there.<span class="zh">没有。你的到来就是最好的礼物。</span></p>
+      </div>
+      <div class="photo-frame alt" style="max-width:320px"><img src="images/faq.webp" alt="" loading="lazy"><div class="caption">ask us anything!!</div></div>
+    </section>
+
+    <!-- RSVP / CONTACT -->
+    <section id="rsvp" class="rsvp">
+      <p class="script">See you there!! <span class="zh" style="font-family:'Microsoft YaHei',sans-serif;font-size:16px;color:#00ffff">期待与你相见</span></p>
+      <h2 class="rainbow by">November 16<span class="zh" style="color:#00ffff;text-shadow:none">11月16日</span></h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center">
+        <div class="contact">
+          <h4>Ceremony <span class="zh">仪式</span></h4>
+          <p>2:00 PM, Washington State Capitol, Olympia<span class="zh">下午2:00 · 华盛顿州议会大厦，奥林匹亚</span></p>
+          <h4>Questions? <span class="zh">有问题？</span></h4>
+          <p>Message us directly.<span class="zh">请直接联系我们。</span></p>
+        </div>
+        <div class="photo-frame" style="transform:rotate(3deg)"><img src="images/rsvp.webp" alt="Couple hottub" loading="lazy"><div class="caption">see you there!</div></div>
+      </div>
+    </section>
+
+    <!-- GUESTBOOK-STYLE FOOTER -->
+    <footer>
+      <div class="badges">
+        <span class="b1">Netscape Now!</span>
+        <span class="b2">HTML 4.01</span>
+        <span class="b3">Made with Notepad</span>
+        <span class="b4">Best viewed 800x600</span>
+      </div>
+      <p>You are visitor</p>
+      <div class="counter" id="counter">000001</div>
+      <p><a href="#" onclick="return popAd('guestbook')">✎ Sign our guestbook!!</a> &nbsp;|&nbsp; <a href="#" onclick="return popAd('webring')">Next Site &gt;&gt;</a></p>
+      <p style="font-size:11px;color:#888">Last updated: whenever we felt like it. Site best viewed with sound on!</p>
+    </footer>
+  </main>
+
+  <!-- RIGHT SIDEBAR: obnoxious ads -->
+  <aside class="sidebar" aria-label="More sponsors">
+    <a class="ad a2" href="#" onclick="return popAd('cursor')"><div class="ad-inner">FREE CURSORS!!<br>DOWNLOAD NOW</div><small>over 900 sparkly ones</small></a>
+    <a class="ad a1" href="#" onclick="return popAd('win')"><div class="ad-inner blink">YOU'RE THE<br>1000th CLICKER!!</div><small>claim prize now</small></a>
+    <a class="ad a3" href="#" onclick="return popAd('webring')"><div class="ad-inner">JOIN OUR<br>WEBRING</div><small>&lt; Prev | Random | Next &gt;</small></a>
+    <a class="ad a4" href="#" onclick="return popAd('virus')"><div class="ad-inner">YOUR PC MAY<br>BE INFECTED!!</div><small>scan free (it's not)</small></a>
+  </aside>
+
+</div>
+
+<div id="winbar">🎉 CONGRATULATIONS!!! You are our 1,000,000th visitor!!! <a href="#" onclick="return popAd('win')">CLICK HERE</a> 🎉</div>
+
+<div id="popups"></div>
+
+<script>
+  // smooth anchor scrolling (kept from the original site)
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', a.getAttribute('href'));
+    });
+  });
+
+  // fake visitor counter that ticks up
+  (function () {
+    var n = 1, el = document.getElementById('counter');
+    setInterval(function () {
+      n += Math.floor(Math.random() * 3) + 1;
+      el.textContent = String(n).padStart(6, '0');
+    }, 1500);
+  })();
+
+  // fake Win98 popups. every ad/link opens one; they are all in-page and go nowhere.
+  var ADS = {
+    ipod:     { title: 'Congratulations!!', icon: '🎁', msg: 'You are visitor #1,000,000!!! Click OK to claim your FREE iPod!!!', btn: 'OK' },
+    hamster:  { title: 'Singles Alert', icon: '🐹', msg: 'Hamsters in your area are waiting to meet you. They are very cute.', btn: 'Meet Them' },
+    dial:     { title: 'Warning', icon: '☎', msg: 'Your dial-up connection is slow. Upgrade now for only $19.99/mo!', btn: 'Upgrade' },
+    lose:     { title: 'Amazing!!', icon: '⚖', msg: 'Lose 30 lbs in 3 days!!! Doctors hate this one weird trick.', btn: 'Tell Me More' },
+    cursor:   { title: 'Free Cursors', icon: '✨', msg: 'Download 900 sparkly cursors! (Your mouse will not stop sparkling.)', btn: 'Download' },
+    win:      { title: 'WINNER!!!', icon: '🏆', msg: 'You are the 1000th clicker!!! Prize: one (1) pixel of glory.', btn: 'Claim Prize' },
+    webring:  { title: 'Webring', icon: '🕸', msg: 'You have been added to the Jasmine & Noah Webring. Click Next to continue!', btn: 'Next >>' },
+    virus:    { title: 'Security Alert', icon: '⚠', msg: 'Your PC may be infected!!! Click OK to scan. (This will not scan anything.)', btn: 'OK' },
+    guestbook:{ title: 'Guestbook', icon: '✎', msg: 'Thanks for signing!! Just kidding. Please just come to the wedding.', btn: 'OK' },
+    popup:    { title: 'Message from webpage', icon: '💬', msg: 'Please enjoy our wedding website!!!', btn: 'OK' }
+  };
+
+  var count = 0;
+  function spawn(key, opts) {
+    var ad = ADS[key] || ADS.popup;
+    var box = document.createElement('div');
+    box.className = 'popup' + (opts && opts.big ? ' ad-pop' : '');
+    var w = 300;
+    box.style.width = w + 'px';
+    box.style.left = (Math.random() * (window.innerWidth - w - 20) + 10) + 'px';
+    box.style.top = (Math.random() * (window.innerHeight - 180) + 10) + 'px';
+    box.style.zIndex = 1000 + (++count);
+    box.innerHTML =
+      '<div class="title"><span>' + ad.title + '</span><button aria-label="Close">X</button></div>' +
+      '<div class="body"><span class="icon">' + ad.icon + '</span><span>' + ad.msg + '</span></div>' +
+      '<div class="foot"><button>' + ad.btn + '</button></div>';
+    var close = function () { box.remove(); };
+    box.querySelector('.title button').onclick = close;
+    box.querySelector('.foot button').onclick = close;
+    document.getElementById('popups').appendChild(box);
+    // bring it to the front when clicked, and rattle it a little so it's noticed
+    box.addEventListener('mousedown', function () { box.style.zIndex = 1000 + (++count); });
+    box.classList.add('shake');
+    return box;
+  }
+
+  function popAd(key) {
+    spawn(key);
+    return false;
+  }
+
+  // a fresh popup every ~8 seconds, plus a big ad every ~25 seconds
+  var keys = Object.keys(ADS);
+  setInterval(function () {
+    spawn(keys[Math.floor(Math.random() * keys.length)]);
+  }, 8000);
+  setInterval(function () {
+    spawn('win', { big: true });
+  }, 25000);
+  setTimeout(function () { spawn('ipod'); }, 2000);
+</script>
+</body>
+</html>
