@@ -178,6 +178,15 @@
   #winbar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffff00; color: #f00; font-family: Impact, sans-serif; text-align: center; padding: 6px; font-size: 18px; z-index: 999; border-top: 4px solid #f00; }
   #winbar a { color: #00f; }
 
+  /* the music player */
+  #jukebox { position: fixed; left: 8px; bottom: 48px; z-index: 999; width: 216px; background: #c0c0c0; border: 2px outset #fff; box-shadow: 4px 4px 0 #000; font-family: Tahoma, "MS Sans Serif", sans-serif; font-size: 11px; color: #000; }
+  #jukebox .title { background: linear-gradient(90deg, #000080, #1084d0); color: #fff; font-weight: bold; padding: 2px 4px; display: flex; justify-content: space-between; align-items: center; }
+  #jukebox .title button { width: 16px; height: 14px; font-size: 9px; font-weight: bold; background: #c0c0c0; border: 1px outset #fff; cursor: pointer; padding: 0; }
+  #jukebox .screen { margin: 4px; border: 2px inset #888; background: #000; }
+  #jukebox .screen > * { display: block; width: 200px; height: 113px; }
+  #jukebox .now { margin: 0 4px 4px; padding: 2px 4px; background: #000; color: #0f0; font-family: "Courier New", monospace; overflow: hidden; white-space: nowrap; }
+  #jukebox .now span { display: inline-block; padding-left: 100%; animation: scroll 9s linear infinite; }
+
   /* hide sidebars on phones */
   @media (max-width: 1040px) { .sidebar { display: none; } }
   @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
@@ -329,6 +338,12 @@
 
 <div id="popups"></div>
 
+<div id="jukebox">
+  <div class="title"><span>&#9835; WinAmp 2.0 &#9835;</span><button aria-label="Close">X</button></div>
+  <div class="screen"><div id="yt"></div></div>
+  <div class="now"><span>NOW PLAYING: The Gap Band - You Dropped A Bomb On Me *** click anywhere to start the music!! ***</span></div>
+</div>
+
 <script>
   // smooth anchor scrolling (kept from the original site)
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
@@ -352,6 +367,36 @@
     });
     document.querySelectorAll('.rainbow, .wobble, .marquee-wrap').forEach(function (el) { io.observe(el); });
   }
+
+  // background music. browsers won't autoplay sound, so it starts on the first click or keypress
+  var yt = null, ytReady = false, ytWanted = false, ytClosed = false;
+  function onYouTubeIframeAPIReady() {
+    yt = new YT.Player('yt', {
+      width: 200, height: 113, videoId: '17lkdqoLt44',
+      playerVars: { playsinline: 1, loop: 1, playlist: '17lkdqoLt44', rel: 0 },
+      events: { onReady: function () { ytReady = true; if (ytWanted) yt.playVideo(); } }
+    });
+  }
+  (function () {
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+    var start = function (e) {
+      if (e.target.closest && e.target.closest('#jukebox .title button')) return;
+      window.removeEventListener('pointerdown', start, true);
+      window.removeEventListener('keydown', start, true);
+      if (ytClosed) return;
+      ytWanted = true;
+      if (ytReady) yt.playVideo();
+    };
+    window.addEventListener('pointerdown', start, true);
+    window.addEventListener('keydown', start, true);
+    document.querySelector('#jukebox .title button').onclick = function () {
+      ytClosed = true;
+      if (ytReady) yt.stopVideo();
+      document.getElementById('jukebox').remove();
+    };
+  })();
 
   // fake visitor counter that ticks up
   (function () {
